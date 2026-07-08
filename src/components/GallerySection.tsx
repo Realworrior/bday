@@ -37,8 +37,6 @@ const initialMedia: Omit<MediaItem, 'id'>[] = [
   { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25 (1).jpeg`, type: 'photo', caption: 'Unapologetically Her', sub: 'Bold, beautiful, Fundi', category: 'glamour', handnote: 'Unmatchable style 💅', tapeColor: 'rgba(212,88,138,0.3)', tapeAngle: -6 },
   { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25 (2).jpeg`, type: 'photo', caption: 'Golden Afternoon', sub: 'Drenched in warmth', category: 'sunkissed', handnote: 'Dreamy lighting', tapeColor: 'rgba(139,58,107,0.35)', tapeAngle: 12 },
   { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25.jpeg`, type: 'photo', caption: 'Vivid & Vital', sub: 'Colourfully alive', category: 'playful', handnote: 'Simply gorgeous 🌸', tapeColor: 'rgba(201,149,110,0.3)', tapeAngle: -10 },
-  { src: `${BASE}WhatsApp Video 2026-07-08 at 16.53.51.mp4`, type: 'video', caption: 'In Motion', sub: 'Captured, never contained', category: 'video', handnote: 'Look at you move! 💃✨', tapeColor: 'rgba(212,88,138,0.35)', tapeAngle: 5 },
-  { src: `${BASE}WhatsApp Video 2026-07-08 at 16.53.51 (1).mp4`, type: 'video', caption: 'The Real You', sub: 'Every second, magical', category: 'video', handnote: 'Lively & lovely! 📹❤️', tapeColor: 'rgba(139,58,107,0.3)', tapeAngle: -9 },
 ]
 
 // Add unique ids

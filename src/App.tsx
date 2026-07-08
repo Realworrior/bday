@@ -4,6 +4,7 @@ import { Particles } from './components/Particles'
 import { CursorTrail } from './components/CursorTrail'
 import { HeroSection } from './components/HeroSection'
 import { GallerySection } from './components/GallerySection'
+import { VideoReelSection } from './components/VideoReelSection'
 import { MessageSection } from './components/MessageSection'
 import { CountdownSection } from './components/CountdownSection'
 import { ClosingSection } from './components/ClosingSection'
@@ -120,6 +121,7 @@ export default function App() {
           <main>
             <HeroSection />
             <GallerySection />
+            <VideoReelSection />
             <MessageSection />
             <CountdownSection />
             <ClosingSection />
