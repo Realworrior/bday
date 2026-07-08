@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Curtain } from './components/Curtain'
 import { Particles } from './components/Particles'
+import { CursorTrail } from './components/CursorTrail'
 import { HeroSection } from './components/HeroSection'
 import { GallerySection } from './components/GallerySection'
 import { MessageSection } from './components/MessageSection'
@@ -74,28 +75,45 @@ export default function App() {
     }
   }, [showContent])
 
+  // Derived chromatic distortion values
+  const chromaX = velocity > 0.4 ? velocity * 3.5 : 0
+  const hueShift = velocity > 0.4 ? velocity * 28 : 0
+  const satBoost = velocity > 0.6 ? 1 + velocity * 0.4 : 1
+
   return (
     <div style={{ background: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
-      {/* Chromatic aberration inject */}
+      {/* Liquid cursor trail overlay (desktop only) */}
+      <CursorTrail />
+
+      {/* Velocity-based chromatic aberration style injection */}
       <style>{`
-        .velocity-glitch {
-          text-shadow: ${velocity > 0.4 ? `${velocity * 3}px 0 0 #ff007f, -${velocity * 3}px 0 0 #00ffff` : 'none'} !important;
-          filter: ${velocity > 0.4 ? `hue-rotate(${velocity * 25}deg)` : 'none'} !important;
-          transition: filter 0.15s ease, text-shadow 0.15s ease;
+        .vel-wrap {
+          filter: ${hueShift > 0
+            ? `hue-rotate(${hueShift}deg) saturate(${satBoost})`
+            : 'none'
+          };
+          transition: filter 0.12s ease;
+        }
+        .vel-wrap h1, .vel-wrap h2, .vel-wrap h3 {
+          text-shadow: ${chromaX > 0
+            ? `${chromaX}px 0 0 #ff007f, -${chromaX}px 0 0 #00ffff`
+            : 'none'
+          };
+          transition: text-shadow 0.12s ease;
         }
       `}</style>
-      
+
       <Particles />
 
       {!showContent && <Curtain onReveal={() => setRevealed(true)} />}
 
       {showContent && (
         <div
-          className="velocity-glitch"
+          className="vel-wrap"
           style={{
-            transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scaleY(${1 + velocity * 0.05}) skewX(${tilt.y * 0.2}deg)`,
+            transform: `perspective(1100px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scaleY(${1 + velocity * 0.04}) skewX(${tilt.y * 0.18}deg)`,
             transformStyle: 'preserve-3d',
-            transition: velocity > 0 ? 'none' : 'transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
+            transition: velocity > 0 ? 'none' : 'transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)',
             willChange: 'transform, filter',
           }}
         >
