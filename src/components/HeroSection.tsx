@@ -104,7 +104,6 @@ export function HeroSection() {
         padding: '100px 16px 60px',
         overflow: 'hidden',
         background: 'linear-gradient(160deg, #04020a 0%, #160520 50%, #04020a 100%)',
-        borderBottom: '2px solid #ff007f',
       }}
     >
       {/* Soft feminine background glows */}
