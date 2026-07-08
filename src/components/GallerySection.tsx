@@ -158,14 +158,15 @@ export function GallerySection() {
     setIsTidied(true)
   }
 
-  // Handle Drag Start
-  const startDrag = (e: React.MouseEvent | React.TouchEvent, id: string, isSticker: boolean) => {
-    e.preventDefault()
-    
+  // Long press timeout ref
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isTouchDraggingRef = useRef(false)
+
+  // Handle Drag Start (from Mouse)
+  const handleMouseDown = (e: React.MouseEvent, id: string, isSticker: boolean) => {
     // Bring dragged element to top
     const newZ = maxZ + 1
     setMaxZ(newZ)
-
     if (isSticker) {
       setStickers(prev => prev.map(s => s.id === id ? { ...s, z: newZ } : s))
     } else {
@@ -175,52 +176,129 @@ export function GallerySection() {
       }))
     }
 
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-    
-    const currentPos = isSticker 
-      ? stickers.find(s => s.id === id) 
-      : positions[id]
-
+    const currentPos = isSticker ? stickers.find(s => s.id === id) : positions[id]
     if (!currentPos) return
 
     dragInfo.current = {
       id,
-      startX: clientX,
-      startY: clientY,
+      startX: e.clientX,
+      startY: e.clientY,
       startPosX: currentPos.x,
       startPosY: currentPos.y,
       isSticker,
     }
 
-    // Add document-level drag listeners for smooth sliding outside card
-    if ('touches' in e) {
-      document.addEventListener('touchmove', onDrag, { passive: false })
-      document.addEventListener('touchend', endDrag)
-    } else {
-      document.addEventListener('mousemove', onDrag)
-      document.addEventListener('mouseup', endDrag)
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
+  }
+
+  // Handle touch start (with long press logic to prevent interrupting scroll)
+  const handleTouchStart = (e: React.TouchEvent, id: string, isSticker: boolean) => {
+    const touch = e.touches[0]
+    const startX = touch.clientX
+    const startY = touch.clientY
+
+    isTouchDraggingRef.current = false
+
+    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current)
+
+    // Set 200ms long press to enable dragging
+    touchTimeoutRef.current = setTimeout(() => {
+      isTouchDraggingRef.current = true
+      
+      const newZ = maxZ + 1
+      setMaxZ(newZ)
+      if (isSticker) {
+        setStickers(prev => prev.map(s => s.id === id ? { ...s, z: newZ } : s))
+      } else {
+        setPositions(prev => ({
+          ...prev,
+          [id]: { ...prev[id], z: newZ },
+        }))
+      }
+
+      const currentPos = isSticker ? stickers.find(s => s.id === id) : positions[id]
+      if (!currentPos) return
+
+      dragInfo.current = {
+        id,
+        startX,
+        startY,
+        startPosX: currentPos.x,
+        startPosY: currentPos.y,
+        isSticker,
+      }
+
+      // Add touch listeners
+      document.addEventListener('touchmove', onTouchMove, { passive: false })
+      document.addEventListener('touchend', onTouchEnd)
+    }, 200)
+
+    // If they touch move quickly, we clear timeout so natural scrolling is not blocked
+    const clearTouchTimer = (moveEvent: TouchEvent) => {
+      const moveTouch = moveEvent.touches[0]
+      const dx = Math.abs(moveTouch.clientX - startX)
+      const dy = Math.abs(moveTouch.clientY - startY)
+      // If moved more than 6px before 200ms, assume they are scrolling
+      if (dx > 6 || dy > 6) {
+        if (touchTimeoutRef.current) {
+          clearTimeout(touchTimeoutRef.current)
+          touchTimeoutRef.current = null
+        }
+        e.currentTarget.removeEventListener('touchmove', clearTouchTimer as any)
+      }
+    }
+
+    e.currentTarget.addEventListener('touchmove', clearTouchTimer as any)
+  }
+
+  // Handle Dragging (Mouse)
+  const onMouseMove = (e: MouseEvent) => {
+    if (!dragInfo.current || !canvasRef.current) return
+    const dx = e.clientX - dragInfo.current.startX
+    const dy = e.clientY - dragInfo.current.startY
+    updateDraggedPosition(dx, dy)
+  }
+
+  // Handle Drag End (Mouse)
+  const onMouseUp = () => {
+    dragInfo.current = null
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+  }
+
+  // Handle Dragging (Touch)
+  const onTouchMove = (e: TouchEvent) => {
+    if (!dragInfo.current || !canvasRef.current) return
+    // Prevent screen scrolling only if actively dragging
+    if (isTouchDraggingRef.current) {
+      e.preventDefault()
+      const touch = e.touches[0]
+      const dx = touch.clientX - dragInfo.current.startX
+      const dy = touch.clientY - dragInfo.current.startY
+      updateDraggedPosition(dx, dy)
     }
   }
 
-  // Handle Dragging
-  const onDrag = (e: MouseEvent | TouchEvent) => {
+  // Handle Drag End (Touch)
+  const onTouchEnd = () => {
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current)
+      touchTimeoutRef.current = null
+    }
+    dragInfo.current = null
+    isTouchDraggingRef.current = false
+    document.removeEventListener('touchmove', onTouchMove)
+    document.removeEventListener('touchend', onTouchEnd)
+  }
+
+  const updateDraggedPosition = (dx: number, dy: number) => {
     if (!dragInfo.current || !canvasRef.current) return
-    
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-
-    const dx = clientX - dragInfo.current.startX
-    const dy = clientY - dragInfo.current.startY
-
     const rect = canvasRef.current.getBoundingClientRect()
-    // Convert drag pixel delta to canvas coordinates percentage
     const pctX = (dx / rect.width) * 100
     const pctY = (dy / rect.height) * 100
 
     const { id, startPosX, startPosY, isSticker } = dragInfo.current
-
-    // Constrain position between 0% and 95% of canvas width/height
     const newX = Math.max(0, Math.min(95, startPosX + pctX))
     const newY = Math.max(0, Math.min(98, startPosY + pctY))
 
@@ -232,15 +310,6 @@ export function GallerySection() {
         [id]: { ...prev[id], x: newX, y: newY },
       }))
     }
-  }
-
-  // Handle Drag End
-  const endDrag = () => {
-    dragInfo.current = null
-    document.removeEventListener('mousemove', onDrag)
-    document.removeEventListener('mouseup', endDrag)
-    document.removeEventListener('touchmove', onDrag)
-    document.removeEventListener('touchend', endDrag)
   }
 
   // Add a new random sticker
@@ -353,7 +422,7 @@ export function GallerySection() {
           color: 'rgba(245,230,211,0.5)',
           marginTop: '10px',
         }}>
-          💡 tip: drag the photos & stickers around to arrange your own desk!
+          💡 tip: hold down any photo or sticker on mobile to drag it!
         </p>
       </div>
 
@@ -454,7 +523,7 @@ export function GallerySection() {
           background: 'rgba(17,10,24,0.3)',
           borderRadius: '24px',
           border: '2px dashed rgba(201,149,110,0.12)',
-          touchAction: 'none', // Prevent default panning/gestures during drags
+          touchAction: 'pan-y', // Allow browser vertical scroll triggers on swipe
           boxShadow: 'inset 0 10px 40px rgba(0,0,0,0.3)',
         }}
       >
@@ -478,27 +547,30 @@ export function GallerySection() {
         ))}
 
         {/* Scattered Stickers */}
-        {stickers.map(st => (
-          <div
-            key={st.id}
-            onMouseDown={e => startDrag(e, st.id, true)}
-            onTouchStart={e => startDrag(e, st.id, true)}
-            style={{
-              position: 'absolute',
-              left: `${st.x}%`,
-              top: `${st.y}%`,
-              transform: `translate(-50%, -50%) rotate(${st.rotation}deg) scale(${st.scale})`,
-              fontSize: '24px',
-              cursor: 'grab',
-              userSelect: 'none',
-              zIndex: (st as any).z || 5,
-              transition: dragInfo.current?.id === st.id ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-            }}
-            className="sticker-shake"
-          >
-            {st.emoji}
-          </div>
-        ))}
+        {stickers.map(st => {
+          const isDragging = dragInfo.current?.id === st.id;
+          return (
+            <div
+              key={st.id}
+              onMouseDown={e => handleMouseDown(e, st.id, true)}
+              onTouchStart={e => handleTouchStart(e, st.id, true)}
+              style={{
+                position: 'absolute',
+                left: `${st.x}%`,
+                top: `${st.y}%`,
+                transform: `translate(-50%, -50%) rotate(${st.rotation}deg) scale(${isDragging ? st.scale * 1.2 : st.scale})`,
+                fontSize: '24px',
+                cursor: 'grab',
+                userSelect: 'none',
+                zIndex: (st as any).z || 5,
+                transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+              }}
+              className="sticker-shake"
+            >
+              {st.emoji}
+            </div>
+          );
+        })}
 
         {/* Scattered Photos/Videos */}
         {mediaItems.map((item, index) => {
@@ -508,8 +580,8 @@ export function GallerySection() {
           return (
             <div
               key={item.id}
-              onMouseDown={e => startDrag(e, item.id, false)}
-              onTouchStart={e => startDrag(e, item.id, false)}
+              onMouseDown={e => handleMouseDown(e, item.id, false)}
+              onTouchStart={e => handleTouchStart(e, item.id, false)}
               onClick={e => {
                 // Spawn minor click confetti
                 triggerClickFeedback(e.clientX, e.clientY, '✨')
@@ -519,12 +591,13 @@ export function GallerySection() {
                 left: `${pos.x}%`,
                 top: `${pos.y}%`,
                 width: window.innerWidth < 600 ? '145px' : '200px',
-                transform: `rotate(${pos.rot}deg) scale(${isDragging ? 1.05 : 1})`,
+                transform: `rotate(${pos.rot}deg) scale(${isDragging ? 1.08 : 1})`,
                 zIndex: pos.z,
                 cursor: isDragging ? 'grabbing' : 'grab',
                 // smooth transition back when not actively dragging
                 transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.4s ease, top 0.4s ease',
                 userSelect: 'none',
+                boxShadow: isDragging ? '0 30px 60px rgba(0,0,0,0.6)' : undefined,
               }}
               className="polaroid-frame"
             >
