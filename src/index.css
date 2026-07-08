@@ -25,6 +25,13 @@
   --cream: #f5e6d3;
   --blush: #8b3a6b;
 
+  /* Feminine cyber additions */
+  --neon-pink: #ff007f;
+  --neon-cyan: #00ffff;
+  --rose-gold: #f4a0b0;
+  --soft-lilac: #c9a0dc;
+  --peach: #ffb6a0;
+
   /* Mobile-first responsive tokens */
   --gallery-cols: 1;
   --section-v: 64px;

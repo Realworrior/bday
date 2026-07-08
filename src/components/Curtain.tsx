@@ -157,14 +157,14 @@ export function Curtain({ onReveal }: CurtainProps) {
         <div style={{
           marginBottom: '20px',
           color: warningActive ? '#ff007f' : 'rgba(255,255,255,0.4)',
-          letterSpacing: '0.4em',
+          letterSpacing: '0.35em',
           fontSize: '11px',
           fontFamily: 'monospace',
           textTransform: 'uppercase',
           fontWeight: 'bold',
           transition: 'color 0.2s ease',
         }}>
-          [ALERT: QUEEN DETECTED IN VIBE MATRIX]
+          🎀 IT GIRL DETECTED — INITIATING SLAY SEQUENCE
         </div>
 
         {/* Glitching Title */}
@@ -187,47 +187,49 @@ export function Curtain({ onReveal }: CurtainProps) {
 
         <div className="handwritten" style={{
           fontSize: 'clamp(18px, 4vw, 24px)',
-          color: '#e8c4a0',
+          color: '#f4a0b0',
           letterSpacing: '0.15em',
           marginTop: '10px',
           marginBottom: '40px',
         }}>
-          ✦ Reigning Since 99 ✦
+          🌸 Bestie. Icon. Birthday Queen. 🌸
         </div>
 
-        {/* Outer Orbiting Dial Rings */}
+        {/* Outer Orbiting Dial Rings — rose & lilac */}
         <div style={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
+          top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '320px',
-          height: '320px',
-          border: '1px dashed rgba(0, 255, 255, 0.3)',
+          width: '320px', height: '320px',
+          border: '1px dashed rgba(244,160,176,0.4)',
           borderRadius: '50%',
-          animation: 'spin-slow 20s linear infinite',
+          animation: 'spin-slow 22s linear infinite',
           pointerEvents: 'none',
         }}>
           <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
+            position: 'absolute', top: '50%', left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '280px',
-            height: '280px',
-            border: '2px solid rgba(255, 0, 127, 0.2)',
+            width: '280px', height: '280px',
+            border: '1.5px solid rgba(201,160,220,0.25)',
             borderRadius: '50%',
-            animation: 'spin-slow 12s linear infinite reverse',
+            animation: 'spin-slow 14s linear infinite reverse',
           }} />
+          {/* Orbiting heart */}
+          <div style={{
+            position: 'absolute', top: '-10px', left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: '18px',
+            animation: 'spin-slow 22s linear infinite reverse',
+          }}>💗</div>
         </div>
 
-        {/* Pulsating Lock Button */}
+        {/* Pulsating Unlock Button */}
         <button
           onClick={handleUnlock}
           style={{
-            background: 'rgba(255, 0, 127, 0.1)',
+            background: 'rgba(255, 0, 127, 0.12)',
             border: '2px solid #ff007f',
-            color: '#ff007f',
+            color: '#fff',
             padding: '18px 44px',
             fontSize: '12px',
             letterSpacing: '0.3em',
@@ -235,8 +237,8 @@ export function Curtain({ onReveal }: CurtainProps) {
             cursor: 'pointer',
             fontFamily: 'monospace',
             fontWeight: 'bold',
-            borderRadius: '4px',
-            boxShadow: '0 0 25px rgba(255, 0, 127, 0.4)',
+            borderRadius: '30px',
+            boxShadow: '0 0 25px rgba(255,0,127,0.5), 0 0 50px rgba(244,160,176,0.2)',
             transition: 'all 0.3s ease',
             animation: 'pulse-glow 2s ease-in-out infinite',
             minHeight: 'unset',
@@ -244,16 +246,14 @@ export function Curtain({ onReveal }: CurtainProps) {
           }}
           onMouseEnter={e => {
             e.currentTarget.style.background = '#ff007f'
-            e.currentTarget.style.color = '#000'
-            e.currentTarget.style.boxShadow = '0 0 40px #ff007f, 0 0 80px #00ffff'
+            e.currentTarget.style.boxShadow = '0 0 40px #ff007f, 0 0 80px #c9a0dc'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = 'rgba(255, 0, 127, 0.1)'
-            e.currentTarget.style.color = '#ff007f'
-            e.currentTarget.style.boxShadow = '0 0 25px rgba(255, 0, 127, 0.4)'
+            e.currentTarget.style.background = 'rgba(255,0,127,0.12)'
+            e.currentTarget.style.boxShadow = '0 0 25px rgba(255,0,127,0.5)'
           }}
         >
-          {exploding ? `SHATTERING SYSTEM IN ${countdown}...` : '🔓 INITIALIZE SYSTEM SHATTER'}
+          {exploding ? `✨ SLAY LOADING... ${countdown}` : '🎀 Open Your Birthday Surprise'}
         </button>
 
         {/* Industrial telemetry stamps */}
@@ -263,15 +263,15 @@ export function Curtain({ onReveal }: CurtainProps) {
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
-          gap: '24px',
+          gap: '20px',
           fontFamily: 'monospace',
           fontSize: '9px',
-          color: 'rgba(0, 255, 255, 0.4)',
+          color: 'rgba(244,160,176,0.45)',
           whiteSpace: 'nowrap',
         }}>
-          <div>CODE: SLAY_99</div>
-          <div>SEC_LEVEL: QUEEN_CLEARANCE</div>
-          <div>EST: JULY_11</div>
+          <div>💅 SLAY_CODE: 9999</div>
+          <div>🌸 GLOW_LEVEL: MAX</div>
+          <div>🎀 JULY_11_FOREVER</div>
         </div>
       </div>
     </div>
