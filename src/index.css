@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+@import 'tailwindcss';
+
+/* ─── Design tokens ─── */
+:root {
+  --background: #06030a;
+  --foreground: #f5e6d3;
+  --card: #110a18;
+  --card-foreground: #f0ddc8;
+  --primary: #c9956e;
+  --primary-foreground: #06030a;
+  --secondary: #2a1535;
+  --secondary-foreground: #e8c4a0;
+  --muted: #1a0f24;
+  --muted-foreground: #9e7a8a;
+  --accent: #8b3a6b;
+  --accent-foreground: #f5e6d3;
+  --border: rgba(201,149,110,0.15);
+  --ring: #c9956e;
+  --radius: 12px;
+
+  --gold: #c9956e;
+  --rose: #d4588a;
+  --plum: #3d1458;
+  --cream: #f5e6d3;
+  --blush: #8b3a6b;
+
+  /* Mobile-first responsive tokens */
+  --gallery-cols: 1;
+  --section-v: 64px;
+  --section-h: 16px;
+}
+
+/* Tablet */
+@media (min-width: 480px) {
+  :root {
+    --gallery-cols: 2;
+    --section-v: 80px;
+    --section-h: 24px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 900px) {
+  :root {
+    --gallery-cols: 3;
+    --section-v: 120px;
+  }
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* iOS scroll lock when lightbox is open */
+body.lightbox-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ─── Touch-friendly minimum tap targets ─── */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* ─── Keyframes ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes curtainLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes curtainRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(201,149,110,0.3); }
+  50% { box-shadow: 0 0 50px rgba(201,149,110,0.7), 0 0 80px rgba(139,58,107,0.4); }
+}
+
+@keyframes particle-rise {
+  0% { opacity: 0; transform: translateY(100vh) rotate(0deg) scale(0); }
+  10% { opacity: 1; }
+  90% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-20vh) rotate(720deg) scale(1.5); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes swipe-hint {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(10px); opacity: 1; }
+}
+
+/* ─── Utility classes ─── */
+.gold-text {
+  background: linear-gradient(135deg, #c9956e, #e8c4a0, #c9956e, #a06840);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.playfair { font-family: 'Playfair Display', serif; }
+.cormorant { font-family: 'Cormorant', serif; }
+
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease;
+}
+
+.particle {
+  position: fixed;
+  pointer-events: none;
+  animation: particle-rise linear infinite;
+}
+
+/* Trim particle count on small screens for perf */
+@media (max-width: 479px) {
+  .particle:nth-child(n+13) { display: none; }
+}
