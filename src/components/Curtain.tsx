@@ -192,7 +192,7 @@ export function Curtain({ onReveal }: CurtainProps) {
           marginTop: '10px',
           marginBottom: '40px',
         }}>
-          🌸 Celebrating 26 Years of Grace & Care 🌸
+          🌸 Celebrating a Beautiful Soul & Caring Nurse 🌸
         </div>
 
         {/* Outer Orbiting Dial Rings — rose & lilac */}

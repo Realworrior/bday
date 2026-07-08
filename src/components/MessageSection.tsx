@@ -13,7 +13,7 @@ const messages = [
   },
   {
     title: "This is your season",
-    body: "Another year older, another layer of magic added to who you already are. You bloom more beautifully every single time the calendar turns.",
+    body: "Another beautiful chapter, another layer of magic added to who you already are. You bloom more beautifully every single time the calendar turns.",
     symbol: "❋",
   },
   {

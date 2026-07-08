@@ -64,7 +64,7 @@ export function HeroSection() {
       '✨ BRIGHTENING LIVES SINCE 2000 🩺',
       '💖 WE LOVE YOU CARO 👑',
       '🎀 CELEBRATION SHIELD: FULLY CHARGED',
-      '🥂 CHEERS TO 26 AMAZING YEARS',
+      '🥂 CHEERS TO A BEAUTIFUL CELEBRATION',
     ]
     setSystemLogs(prev => [eggs[Math.floor(Math.random() * eggs.length)], ...prev.slice(0, 4)])
   }
