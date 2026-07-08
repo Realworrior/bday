@@ -101,24 +101,23 @@ export function GallerySection() {
     const newPositions: typeof positions = {}
     
     mediaItems.forEach((item, index) => {
-      // Calculate scattered layout
       let x = 0
       let y = 0
       
       if (isMobile) {
-        // Mobile: layout stacked centrally with small offsets so they don't go off-screen
-        x = 5 + (index % 3) * 28 + Math.random() * 8
-        y = 5 + Math.floor(index / 3) * 60 + Math.random() * 10
+        // Mobile: 3 columns, 7 rows. Keep y within 0% to 92% of the taller mobile canvas
+        x = 4 + (index % 3) * 29 + Math.random() * 5
+        y = 2 + Math.floor(index / 3) * 13.5 + Math.random() * 2
       } else {
-        // Desktop: fully scattered across a larger canvas
-        x = 4 + (index % 5) * 19 + Math.random() * 6
-        y = 4 + Math.floor(index / 5) * 23 + Math.random() * 8
+        // Desktop: 5 columns, 5 rows. Keep y within 0% to 90% of the desktop canvas
+        x = 3 + (index % 5) * 18.5 + Math.random() * 4
+        y = 3 + Math.floor(index / 5) * 18 + Math.random() * 3
       }
 
       newPositions[item.id] = {
         x,
         y,
-        rot: -18 + Math.random() * 36, // rotation between -18 and 18 deg
+        rot: -14 + Math.random() * 28, // slight rotate for cozy aesthetic
         z: index + 1,
       }
     });
@@ -132,7 +131,6 @@ export function GallerySection() {
     scatterAll()
     // Re-scatter on window resize for better responsive coordinates
     const handleResize = () => {
-      // Only re-scatter if not already tidied
       if (!isTidied) scatterAll()
     }
     window.addEventListener('resize', handleResize)
@@ -143,10 +141,10 @@ export function GallerySection() {
   const tidyUp = () => {
     const newPositions: typeof positions = {}
     mediaItems.forEach((item, index) => {
-      // Align into neat visual grid columns, but keep slight rotation for scrapbook charm
-      const cols = window.innerWidth < 600 ? 2 : 4
-      const x = 5 + (index % cols) * (90 / cols)
-      const y = 3 + Math.floor(index / cols) * 38
+      const isMobile = window.innerWidth < 600
+      const cols = isMobile ? 2 : 4
+      const x = 4 + (index % cols) * (90 / cols)
+      const y = 2 + Math.floor(index / cols) * (isMobile ? 8.8 : 18)
       newPositions[item.id] = {
         x,
         y,
@@ -517,8 +515,8 @@ export function GallerySection() {
           position: 'relative',
           width: '100%',
           maxWidth: '1200px',
-          // Dynamic height depending on screen size to hold absolute elements nicely
-          height: window.innerWidth < 600 ? '1450px' : '1100px',
+          // Adjusted height to ensure all 21 scattered polaroids fit without clipping
+          height: window.innerWidth < 600 ? '2400px' : '1300px',
           margin: '0 auto',
           background: 'rgba(17,10,24,0.3)',
           borderRadius: '24px',
