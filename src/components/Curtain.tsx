@@ -164,7 +164,7 @@ export function Curtain({ onReveal }: CurtainProps) {
           fontWeight: 'bold',
           transition: 'color 0.2s ease',
         }}>
-          🎀 IT GIRL DETECTED — INITIATING SLAY SEQUENCE
+          🎀 HAPPY BIRTHDAY CARO — SURPRISE UNLOCK INITIATED
         </div>
 
         {/* Glitching Title */}
@@ -192,7 +192,7 @@ export function Curtain({ onReveal }: CurtainProps) {
           marginTop: '10px',
           marginBottom: '40px',
         }}>
-          🌸 Bestie. Icon. Birthday Queen. 🌸
+          🌸 Celebrating 26 Years of Grace & Care 🌸
         </div>
 
         {/* Outer Orbiting Dial Rings — rose & lilac */}
@@ -253,7 +253,7 @@ export function Curtain({ onReveal }: CurtainProps) {
             e.currentTarget.style.boxShadow = '0 0 25px rgba(255,0,127,0.5)'
           }}
         >
-          {exploding ? `✨ SLAY LOADING... ${countdown}` : '🎀 Open Your Birthday Surprise'}
+          {exploding ? `✨ SURPRISE LOADING... ${countdown}` : '🎀 Open Your Birthday surprise'}
         </button>
 
         {/* Industrial telemetry stamps */}
@@ -269,9 +269,9 @@ export function Curtain({ onReveal }: CurtainProps) {
           color: 'rgba(244,160,176,0.45)',
           whiteSpace: 'nowrap',
         }}>
-          <div>💅 SLAY_CODE: 9999</div>
-          <div>🌸 GLOW_LEVEL: MAX</div>
-          <div>🎀 JULY_11_FOREVER</div>
+          <div>🌸 EST. 2000</div>
+          <div>🩺 CARE & COMPASSION</div>
+          <div>🎀 JULY 11</div>
         </div>
       </div>
     </div>

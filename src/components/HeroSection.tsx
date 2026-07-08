@@ -20,7 +20,7 @@ export function HeroSection() {
 
   // Glitch name loop
   useEffect(() => {
-    const chars = 'C4R0✦★💅🌸✨'
+    const chars = 'C4R0✦★🌸✨'
     const interval = setInterval(() => {
       if (Math.random() > 0.82) {
         const glitched = 'CARO'
@@ -34,14 +34,14 @@ export function HeroSection() {
     return () => clearInterval(interval)
   }, [])
 
-  // System logs typed in — girl jargon edition
+  // System logs typed in — normal english nurse edition
   useEffect(() => {
     const logs = [
-      'BESTIE.EXE DETECTED... 💅',
-      'ACTIVATING: MAIN CHARACTER ENERGY...',
-      'WARN: SLAY LEVELS DANGEROUSLY HIGH 🌸',
-      'BIRTHDAY CHEAT CODES UNLOCKED ✨',
-      'STATUS: THAT GIRL, ALWAYS. 👑',
+      'CARO PROFILE SYSTEM DETECTED... 🌸',
+      'ACTIVATING: HERO PROFILE...',
+      'ESTABLISHED: YEAR 2000 🩺',
+      'BIRTHDAY CELEBRATION UNLOCKED ✨',
+      'STATUS: AMAZING NURSE & CARING SOUL. 👑',
     ]
     logs.forEach((log, i) => {
       setTimeout(() => setSystemLogs(prev => [...prev, log]), (i + 1) * 750)
@@ -60,12 +60,11 @@ export function HeroSection() {
   const triggerCheatCode = () => {
     setClickCount(c => c + 1)
     const eggs = [
-      '💅 BESTIE ACTIVATED: THAT GIRL MODE ON',
-      '🌸 GLOW UP PROTOCOL: MAXIMUM LEVEL',
-      '✨ ALL EYES ON THE IT GIRL — CARO 👑',
-      '🎀 SLAY QUEEN SHIELD: FULLY CHARGED',
-      '💖 MAIN CHARACTER ENERGY: UNSTOPPABLE',
-      '🥂 CHAMPAGNE QUEEN PROTOCOL: ENGAGED',
+      '🌸 COMPASSION ENGINE: MAXIMUM POWER',
+      '✨ BRIGHTENING LIVES SINCE 2000 🩺',
+      '💖 WE LOVE YOU CARO 👑',
+      '🎀 CELEBRATION SHIELD: FULLY CHARGED',
+      '🥂 CHEERS TO 26 AMAZING YEARS',
     ]
     setSystemLogs(prev => [eggs[Math.floor(Math.random() * eggs.length)], ...prev.slice(0, 4)])
   }
@@ -73,7 +72,6 @@ export function HeroSection() {
   /**
    * Controlled scatter: each block has a FIXED, intentional offset
    * so it looks like a deliberate "designer toss" rather than a bug.
-   * Offsets are small (max ±8vw / ±6vh) so nothing goes off-screen.
    */
   const presets = [
     { tx: '-5vw', ty: '-4vh', rot: '-6deg' },  // block 0 — photo
@@ -191,8 +189,8 @@ export function HeroSection() {
                 backgroundSize: '100% 4px',
               }} />
 
-              <div style={{ position: 'absolute', top: 5, left: 8, color: '#f4a0b0', fontFamily: 'monospace', fontSize: '9px' }}>[BESTIE_CAM ♡]</div>
-              <div style={{ position: 'absolute', top: 5, right: 8, color: '#c9a0dc', fontFamily: 'monospace', fontSize: '9px' }}>IT-GIRL</div>
+              <div style={{ position: 'absolute', top: 5, left: 8, color: '#f4a0b0', fontFamily: 'monospace', fontSize: '9px' }}>[SURPRISE_CAM ♡]</div>
+              <div style={{ position: 'absolute', top: 5, right: 8, color: '#c9a0dc', fontFamily: 'monospace', fontSize: '9px' }}>EST. 2000</div>
 
               <img
                 src={heroImage}
@@ -213,7 +211,7 @@ export function HeroSection() {
                 fontFamily: 'monospace', fontSize: '10px',
               }}>
                 <div style={{ color: '#f4a0b0' }}>🌸 JULY 11TH</div>
-                <div style={{ color: '#c9a0dc' }}>SLAY.EXE</div>
+                <div style={{ color: '#c9a0dc' }}>HEALER & QUEEN</div>
               </div>
 
               <div style={{
@@ -225,7 +223,7 @@ export function HeroSection() {
                 clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
                 whiteSpace: 'nowrap',
               }}>
-                💅 MAIN CHARACTER
+                👩‍⚕️ BRIGHTENING LIVES
               </div>
             </div>
           </div>
@@ -242,7 +240,7 @@ export function HeroSection() {
               letterSpacing: '0.25em',
             }}>
               <span style={{ display: 'inline-block', width: '8px', height: '8px', background: '#ff007f', borderRadius: '50%' }} />
-              PROTOCOL: BIRTHDAY_GIRL_VIBE_v2.6 🎀
+              CELEBRATING CARO — JULY 11TH 🎀
             </div>
           </div>
 
@@ -311,7 +309,7 @@ export function HeroSection() {
                 padding: '3px 10px', borderRadius: '20px',
                 display: 'flex', alignItems: 'center', gap: '4px',
               }}>
-                🌸 That Girl
+                🌸 Born 2000
               </div>
             </div>
           </div>
@@ -329,17 +327,17 @@ export function HeroSection() {
                 color: '#ff007f', borderBottom: '1px dashed rgba(244,160,176,0.25)',
                 paddingBottom: '6px', marginBottom: '10px', fontWeight: 'bold',
               }}>
-                [CARO_VIBE_STATS 💖]
+                [CARO_PROFILE_STATS 💖]
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: '7px', color: '#f5e6d3' }}>
-                <div>SLAY FACTOR:</div>
-                <div style={{ color: '#f4a0b0' }}>██████████ 999+</div>
-                <div>BESTIE ENERGY:</div>
-                <div style={{ color: '#c9a0dc' }}>██████████ MAX 🌸</div>
-                <div>THAT GIRL STATUS:</div>
-                <div style={{ color: '#ffb6a0' }}>PERMANENT 💅</div>
-                <div>GLOW UP LEVEL:</div>
-                <div style={{ color: '#f4a0b0' }}>ASCENDED 👑</div>
+                <div>CARE & COMPASSION:</div>
+                <div style={{ color: '#f4a0b0' }}>██████████ 999+ 🩺</div>
+                <div>SMILE & JOY LEVEL:</div>
+                <div style={{ color: '#c9a0dc' }}>██████████ 100% ✨</div>
+                <div>ESTABLISHED YEAR:</div>
+                <div style={{ color: '#ffb6a0' }}>2000 🎂</div>
+                <div>PROFESSION:</div>
+                <div style={{ color: '#f4a0b0' }}>NURSE 👩‍⚕️</div>
               </div>
             </div>
           </div>
@@ -390,7 +388,7 @@ export function HeroSection() {
                 minHeight: 'unset', minWidth: 'unset',
               }}
             >
-              💅 Slay Code [×{clickCount}]
+              🌸 Birthday Gift [×{clickCount}]
             </button>
 
             <button
@@ -412,7 +410,7 @@ export function HeroSection() {
                 minHeight: 'unset', minWidth: 'unset',
               }}
             >
-              {neonActive ? '🌸 Dim Glow' : '✨ Max Glow'}
+              {neonActive ? '🌸 Dim Lights' : '✨ Max Glow'}
             </button>
           </div>
         </div>
