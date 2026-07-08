@@ -1,5 +1,10 @@
 {
+  "title": "Happy Birthday Fundi 🎀",
   "description": "Celebrating a beautiful soul and caring nurse — Happy Birthday, Caro! 🌸✨",
+  "language": "en",
+  "openGraph": {
+    "image": "https://carofundi.vercel.app/imgss/WhatsApp%20Image%202026-07-08%20at%2016.53.50.jpeg"
+  },
   "robots": {
     "index": false
   },
