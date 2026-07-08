@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Caveat:wght@400;700&family=Gochi+Hand&display=swap');
 @import 'tailwindcss';
 
 /* ─── Design tokens ─── */
@@ -174,3 +174,39 @@ button, a, [role="button"] {
 @media (max-width: 479px) {
   .particle:nth-child(n+13) { display: none; }
 }
+
+/* ─── Scrapbook Utilities ─── */
+.handwritten {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+}
+
+.gochi {
+  font-family: 'Gochi Hand', cursive;
+}
+
+.journal-tape {
+  position: absolute;
+  background: rgba(201,149,110,0.22);
+  backdrop-filter: blur(2px);
+  border-left: 2px dashed rgba(255,255,255,0.4);
+  border-right: 2px dashed rgba(255,255,255,0.4);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.polaroid-frame {
+  background: #f7f3eb; /* Warm vintage paper tone */
+  color: #1c1510;
+  box-shadow: 2px 10px 30px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.05);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes sticker-shake {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg) scale(1.05); }
+}
+
+.sticker-shake:hover {
+  animation: sticker-shake 0.4s ease-in-out infinite alternate;
+}
+

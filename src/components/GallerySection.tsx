@@ -1,54 +1,661 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 
 /* ─────────────────────────────────────────────
-   Media catalogue – all 19 photos + 2 videos
+   Media catalogue – all 19 photos + 2 videos + Digital journaling mockup as background or sticker!
    ───────────────────────────────────────────── */
 type MediaItem = {
+  id: string
   src: string
   type: 'photo' | 'video'
   caption: string
   sub: string
   category: 'sunkissed' | 'glamour' | 'playful' | 'video'
-  aspect: '3/4' | '4/5' | '1/1' | '4/3'
+  handnote?: string
+  tapeColor?: string
+  tapeAngle?: number
 }
 
 const BASE = '/imgss/'
 
-const media: MediaItem[] = [
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.48 (1).jpeg`, type: 'photo', caption: 'Golden Hour Glow', sub: 'The sun bows to you', category: 'sunkissed', aspect: '3/4' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.48.jpeg`, type: 'photo', caption: 'Radiance Untamed', sub: 'Effortless & luminous', category: 'sunkissed', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49 (1).jpeg`, type: 'photo', caption: 'Pure Joy', sub: 'Your smile heals everything', category: 'playful', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49 (2).jpeg`, type: 'photo', caption: 'Unbothered Queen', sub: 'Born to stand out', category: 'glamour', aspect: '3/4' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49 (3).jpeg`, type: 'photo', caption: 'Free Spirit', sub: 'Wild & wonderfully you', category: 'playful', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49.jpeg`, type: 'photo', caption: 'Soft Power', sub: 'Quiet, unshakeable strength', category: 'glamour', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (1).jpeg`, type: 'photo', caption: 'Effortlessly You', sub: 'Natural beauty, unmatched', category: 'sunkissed', aspect: '3/4' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (2).jpeg`, type: 'photo', caption: 'Iconic Frame', sub: 'A moment frozen in gold', category: 'glamour', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (3).jpeg`, type: 'photo', caption: 'Dream Sequence', sub: 'Every shot, a masterpiece', category: 'sunkissed', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (4).jpeg`, type: 'photo', caption: 'Crown Season', sub: 'Always at the top', category: 'glamour', aspect: '3/4' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50.jpeg`, type: 'photo', caption: 'The Vibe', sub: 'Unfiltered & perfect', category: 'playful', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.51 (1).jpeg`, type: 'photo', caption: 'Magnetic Energy', sub: 'You pull the room in', category: 'glamour', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.51.jpeg`, type: 'photo', caption: 'Birthday Queen', sub: 'Reigning forever', category: 'glamour', aspect: '3/4' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.23.jpeg`, type: 'photo', caption: 'Afternoon Magic', sub: 'Time stops for you', category: 'sunkissed', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.24 (1).jpeg`, type: 'photo', caption: 'Radiant Bloom', sub: 'In full colour', category: 'playful', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.24.jpeg`, type: 'photo', caption: 'Luminous', sub: 'Lit from within', category: 'sunkissed', aspect: '3/4' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25 (1).jpeg`, type: 'photo', caption: 'Unapologetically Her', sub: 'Bold, beautiful, Fundi', category: 'glamour', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25 (2).jpeg`, type: 'photo', caption: 'Golden Afternoon', sub: 'Drenched in warmth', category: 'sunkissed', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25.jpeg`, type: 'photo', caption: 'Vivid & Vital', sub: 'Colourfully alive', category: 'playful', aspect: '4/3' },
-  { src: `${BASE}WhatsApp Video 2026-07-08 at 16.53.51.mp4`, type: 'video', caption: 'In Motion', sub: 'Captured, never contained', category: 'video', aspect: '4/5' },
-  { src: `${BASE}WhatsApp Video 2026-07-08 at 16.53.51 (1).mp4`, type: 'video', caption: 'The Real You', sub: 'Every second, magical', category: 'video', aspect: '4/5' },
+const initialMedia: Omit<MediaItem, 'id'>[] = [
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.48 (1).jpeg`, type: 'photo', caption: 'Golden Hour Glow', sub: 'The sun bows to you', category: 'sunkissed', handnote: 'That light! ☀️✨', tapeColor: 'rgba(212,88,138,0.3)', tapeAngle: -10 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.48.jpeg`, type: 'photo', caption: 'Radiance Untamed', sub: 'Effortless & luminous', category: 'sunkissed', handnote: 'Serving face 💅', tapeColor: 'rgba(201,149,110,0.3)', tapeAngle: 15 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49 (1).jpeg`, type: 'photo', caption: 'Pure Joy', sub: 'Your smile heals everything', category: 'playful', handnote: 'Literally obsessed with this smile! ❤️', tapeColor: 'rgba(139,58,107,0.35)', tapeAngle: -5 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49 (2).jpeg`, type: 'photo', caption: 'Unbothered Queen', sub: 'Born to stand out', category: 'glamour', handnote: '10/10 vibe 👑', tapeColor: 'rgba(201,149,110,0.3)', tapeAngle: 12 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49 (3).jpeg`, type: 'photo', caption: 'Free Spirit', sub: 'Wild & wonderfully you', category: 'playful', handnote: 'A whole mood!', tapeColor: 'rgba(212,88,138,0.25)', tapeAngle: -18 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.49.jpeg`, type: 'photo', caption: 'Soft Power', sub: 'Quiet, unshakeable strength', category: 'glamour', handnote: 'So graceful...', tapeColor: 'rgba(139,58,107,0.3)', tapeAngle: 8 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (1).jpeg`, type: 'photo', caption: 'Effortlessly You', sub: 'Natural beauty, unmatched', category: 'sunkissed', handnote: 'No makeup, just magic ✨', tapeColor: 'rgba(201,149,110,0.3)', tapeAngle: -12 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (2).jpeg`, type: 'photo', caption: 'Iconic Frame', sub: 'A moment frozen in gold', category: 'glamour', handnote: 'Excuse me? Gorgeous!', tapeColor: 'rgba(212,88,138,0.35)', tapeAngle: 5 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (3).jpeg`, type: 'photo', caption: 'Dream Sequence', sub: 'Every shot, a masterpiece', category: 'sunkissed', handnote: 'Pure model energy 📸', tapeColor: 'rgba(139,58,107,0.3)', tapeAngle: -15 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50 (4).jpeg`, type: 'photo', caption: 'Crown Season', sub: 'Always at the top', category: 'glamour', handnote: 'Yes queen! 👑💅', tapeColor: 'rgba(201,149,110,0.35)', tapeAngle: 10 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.50.jpeg`, type: 'photo', caption: 'The Vibe', sub: 'Unfiltered & perfect', category: 'playful', handnote: 'This is so Caro ❤️', tapeColor: 'rgba(212,88,138,0.3)', tapeAngle: -8 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.51 (1).jpeg`, type: 'photo', caption: 'Magnetic Energy', sub: 'You pull the room in', category: 'glamour', handnote: 'Too hot to handle! 🔥', tapeColor: 'rgba(139,58,107,0.35)', tapeAngle: 14 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 16.53.51.jpeg`, type: 'photo', caption: 'Birthday Queen', sub: 'Reigning forever', category: 'glamour', handnote: 'July 11th royalty 🥂', tapeColor: 'rgba(201,149,110,0.3)', tapeAngle: -11 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.23.jpeg`, type: 'photo', caption: 'Afternoon Magic', sub: 'Time stops for you', category: 'sunkissed', handnote: 'Sun kissed and blessed ☀️', tapeColor: 'rgba(212,88,138,0.25)', tapeAngle: 7 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.24 (1).jpeg`, type: 'photo', caption: 'Radiant Bloom', sub: 'In full colour', category: 'playful', handnote: 'Stunning fit!', tapeColor: 'rgba(139,58,107,0.3)', tapeAngle: -13 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.24.jpeg`, type: 'photo', caption: 'Luminous', sub: 'Lit from within', category: 'sunkissed', handnote: 'Glow queen ✨', tapeColor: 'rgba(201,149,110,0.35)', tapeAngle: 9 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25 (1).jpeg`, type: 'photo', caption: 'Unapologetically Her', sub: 'Bold, beautiful, Fundi', category: 'glamour', handnote: 'Unmatchable style 💅', tapeColor: 'rgba(212,88,138,0.3)', tapeAngle: -6 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25 (2).jpeg`, type: 'photo', caption: 'Golden Afternoon', sub: 'Drenched in warmth', category: 'sunkissed', handnote: 'Dreamy lighting', tapeColor: 'rgba(139,58,107,0.35)', tapeAngle: 12 },
+  { src: `${BASE}WhatsApp Image 2026-07-08 at 17.36.25.jpeg`, type: 'photo', caption: 'Vivid & Vital', sub: 'Colourfully alive', category: 'playful', handnote: 'Simply gorgeous 🌸', tapeColor: 'rgba(201,149,110,0.3)', tapeAngle: -10 },
+  { src: `${BASE}WhatsApp Video 2026-07-08 at 16.53.51.mp4`, type: 'video', caption: 'In Motion', sub: 'Captured, never contained', category: 'video', handnote: 'Look at you move! 💃✨', tapeColor: 'rgba(212,88,138,0.35)', tapeAngle: 5 },
+  { src: `${BASE}WhatsApp Video 2026-07-08 at 16.53.51 (1).mp4`, type: 'video', caption: 'The Real You', sub: 'Every second, magical', category: 'video', handnote: 'Lively & lovely! 📹❤️', tapeColor: 'rgba(139,58,107,0.3)', tapeAngle: -9 },
 ]
 
-type Category = 'all' | 'sunkissed' | 'glamour' | 'playful' | 'video'
-const FILTERS: { key: Category; label: string; icon: string }[] = [
-  { key: 'all', label: 'All', icon: '✦' },
-  { key: 'sunkissed', label: 'Sunkissed', icon: '☀' },
-  { key: 'glamour', label: 'Glamour', icon: '◈' },
-  { key: 'playful', label: 'Playful', icon: '❋' },
-  { key: 'video', label: 'Videos', icon: '▶' },
+// Add unique ids
+const mediaItems: MediaItem[] = initialMedia.map((item, index) => ({
+  ...item,
+  id: `item-${index}`,
+}))
+
+type ScrapbookSticker = {
+  id: string
+  emoji: string
+  x: number // percentage 0-100
+  y: number // percentage 0-100
+  rotation: number
+  scale: number
+}
+
+const defaultStickers: ScrapbookSticker[] = [
+  { id: 'st-1', emoji: '❤️', x: 12, y: 15, rotation: -15, scale: 1.5 },
+  { id: 'st-2', emoji: '👑', x: 82, y: 18, rotation: 10, scale: 1.8 },
+  { id: 'st-3', emoji: '✨', x: 45, y: 8, rotation: 5, scale: 1.3 },
+  { id: 'st-4', emoji: '🌟', x: 28, y: 45, rotation: 20, scale: 1.4 },
+  { id: 'st-5', emoji: '🥂', x: 72, y: 65, rotation: -12, scale: 1.6 },
+  { id: 'st-6', emoji: '🎂', x: 88, y: 48, rotation: 8, scale: 1.7 },
+  { id: 'st-7', emoji: '💖', x: 8, y: 72, rotation: 25, scale: 1.5 },
+  { id: 'st-8', emoji: '💅', x: 55, y: 82, rotation: -8, scale: 1.4 },
 ]
 
 /* ─────────────────────────────────────────────
-   Lightbox — with touch swipe support
+   CONFETTI PARTICLE SYSTEM
+   ───────────────────────────────────────────── */
+type ConfettiBurst = {
+  id: number
+  x: number
+  y: number
+  emoji: string
+}
+
+/* ─────────────────────────────────────────────
+   SCRAPBOOK CANVAS SECTION
+   ───────────────────────────────────────────── */
+export function GallerySection() {
+  const canvasRef = useRef<HTMLDivElement>(null)
+  
+  // Track positions, rotations, and z-index for each photo
+  const [positions, setPositions] = useState<Record<string, { x: number; y: number; rot: number; z: number }>>({})
+  const [stickers, setStickers] = useState<ScrapbookSticker[]>(defaultStickers)
+  const [maxZ, setMaxZ] = useState(10)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [isTidied, setIsTidied] = useState(false)
+  const [bursts, setBursts] = useState<ConfettiBurst[]>([])
+  const [burstId, setBurstId] = useState(0)
+
+  // Dragging states
+  const dragInfo = useRef<{ id: string; startX: number; startY: number; startPosX: number; startPosY: number; isSticker: boolean } | null>(null)
+
+  // Initialize scattered positions
+  const scatterAll = useCallback(() => {
+    const isMobile = window.innerWidth < 600
+    const newPositions: typeof positions = {}
+    
+    mediaItems.forEach((item, index) => {
+      // Calculate scattered layout
+      let x = 0
+      let y = 0
+      
+      if (isMobile) {
+        // Mobile: layout stacked centrally with small offsets so they don't go off-screen
+        x = 5 + (index % 3) * 28 + Math.random() * 8
+        y = 5 + Math.floor(index / 3) * 60 + Math.random() * 10
+      } else {
+        // Desktop: fully scattered across a larger canvas
+        x = 4 + (index % 5) * 19 + Math.random() * 6
+        y = 4 + Math.floor(index / 5) * 23 + Math.random() * 8
+      }
+
+      newPositions[item.id] = {
+        x,
+        y,
+        rot: -18 + Math.random() * 36, // rotation between -18 and 18 deg
+        z: index + 1,
+      }
+    });
+
+    setPositions(newPositions)
+    setMaxZ(mediaItems.length + 5)
+    setIsTidied(false)
+  }, [positions])
+
+  useEffect(() => {
+    scatterAll()
+    // Re-scatter on window resize for better responsive coordinates
+    const handleResize = () => {
+      // Only re-scatter if not already tidied
+      if (!isTidied) scatterAll()
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Tidy up into a neat scrapbook layout
+  const tidyUp = () => {
+    const newPositions: typeof positions = {}
+    mediaItems.forEach((item, index) => {
+      // Align into neat visual grid columns, but keep slight rotation for scrapbook charm
+      const cols = window.innerWidth < 600 ? 2 : 4
+      const x = 5 + (index % cols) * (90 / cols)
+      const y = 3 + Math.floor(index / cols) * 38
+      newPositions[item.id] = {
+        x,
+        y,
+        rot: -2 + Math.random() * 4, // tiny rotations
+        z: index + 1,
+      }
+    })
+    setPositions(newPositions)
+    setIsTidied(true)
+  }
+
+  // Handle Drag Start
+  const startDrag = (e: React.MouseEvent | React.TouchEvent, id: string, isSticker: boolean) => {
+    e.preventDefault()
+    
+    // Bring dragged element to top
+    const newZ = maxZ + 1
+    setMaxZ(newZ)
+
+    if (isSticker) {
+      setStickers(prev => prev.map(s => s.id === id ? { ...s, z: newZ } : s))
+    } else {
+      setPositions(prev => ({
+        ...prev,
+        [id]: { ...prev[id], z: newZ },
+      }))
+    }
+
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    
+    const currentPos = isSticker 
+      ? stickers.find(s => s.id === id) 
+      : positions[id]
+
+    if (!currentPos) return
+
+    dragInfo.current = {
+      id,
+      startX: clientX,
+      startY: clientY,
+      startPosX: currentPos.x,
+      startPosY: currentPos.y,
+      isSticker,
+    }
+
+    // Add document-level drag listeners for smooth sliding outside card
+    if ('touches' in e) {
+      document.addEventListener('touchmove', onDrag, { passive: false })
+      document.addEventListener('touchend', endDrag)
+    } else {
+      document.addEventListener('mousemove', onDrag)
+      document.addEventListener('mouseup', endDrag)
+    }
+  }
+
+  // Handle Dragging
+  const onDrag = (e: MouseEvent | TouchEvent) => {
+    if (!dragInfo.current || !canvasRef.current) return
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+
+    const dx = clientX - dragInfo.current.startX
+    const dy = clientY - dragInfo.current.startY
+
+    const rect = canvasRef.current.getBoundingClientRect()
+    // Convert drag pixel delta to canvas coordinates percentage
+    const pctX = (dx / rect.width) * 100
+    const pctY = (dy / rect.height) * 100
+
+    const { id, startPosX, startPosY, isSticker } = dragInfo.current
+
+    // Constrain position between 0% and 95% of canvas width/height
+    const newX = Math.max(0, Math.min(95, startPosX + pctX))
+    const newY = Math.max(0, Math.min(98, startPosY + pctY))
+
+    if (isSticker) {
+      setStickers(prev => prev.map(s => s.id === id ? { ...s, x: newX, y: newY } : s))
+    } else {
+      setPositions(prev => ({
+        ...prev,
+        [id]: { ...prev[id], x: newX, y: newY },
+      }))
+    }
+  }
+
+  // Handle Drag End
+  const endDrag = () => {
+    dragInfo.current = null
+    document.removeEventListener('mousemove', onDrag)
+    document.removeEventListener('mouseup', endDrag)
+    document.removeEventListener('touchmove', onDrag)
+    document.removeEventListener('touchend', endDrag)
+  }
+
+  // Add a new random sticker
+  const addNewSticker = (emoji: string) => {
+    const isMobile = window.innerWidth < 600
+    const id = `st-${Date.now()}`
+    const newSticker: ScrapbookSticker = {
+      id,
+      emoji,
+      x: 10 + Math.random() * 70,
+      y: isMobile ? 10 + Math.random() * 40 : 10 + Math.random() * 70,
+      rotation: -30 + Math.random() * 60,
+      scale: 1.3 + Math.random() * 0.5,
+    }
+    setStickers(prev => [...prev, newSticker])
+    
+    // Play sweet click feedback confetti
+    triggerClickFeedback(window.innerWidth / 2, window.innerHeight / 2, emoji)
+  }
+
+  // Confetti/Emoji burst feedback on tap
+  const triggerClickFeedback = (clientX: number, clientY: number, emoji: string) => {
+    if (!canvasRef.current) return
+    const rect = canvasRef.current.getBoundingClientRect()
+    const x = ((clientX - rect.left) / rect.width) * 100
+    const y = ((clientY - rect.top) / rect.height) * 100
+
+    const newBurst: ConfettiBurst = {
+      id: burstId,
+      x,
+      y,
+      emoji,
+    }
+    
+    setBursts(prev => [...prev, newBurst])
+    setBurstId(id => id + 1)
+
+    // Remove burst after animation
+    setTimeout(() => {
+      setBursts(prev => prev.filter(b => b.id !== newBurst.id))
+    }, 1200)
+  }
+
+  // Lightbox navigation
+  const prevItem = useCallback(() => {
+    setLightboxIndex(i => i !== null ? (i - 1 + mediaItems.length) % mediaItems.length : null)
+  }, [])
+
+  const nextItem = useCallback(() => {
+    setLightboxIndex(i => i !== null ? (i + 1) % mediaItems.length : null)
+  }, [])
+
+  return (
+    <section style={{
+      padding: '80px 12px 120px',
+      position: 'relative',
+      overflow: 'hidden',
+      background: '#0a0512',
+    }}>
+      {/* Decorative Scrapbook background elements */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: `
+          radial-gradient(circle at 10% 20%, rgba(201,149,110,0.06) 0%, transparent 40%),
+          radial-gradient(circle at 90% 80%, rgba(139,58,107,0.06) 0%, transparent 40%)
+        `,
+        pointerEvents: 'none',
+      }} />
+
+      {/* Grid notebook paper lines in background */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        opacity: 0.15,
+        backgroundImage: 'linear-gradient(rgba(201,149,110,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(201,149,110,0.15) 1px, transparent 1px)',
+        backgroundSize: '30px 30px',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Section Header */}
+      <div style={{ textAlign: 'center', marginBottom: '32px', position: 'relative', zIndex: 5 }}>
+        <span className="handwritten" style={{
+          fontSize: 'clamp(20px, 5vw, 28px)',
+          color: '#c9956e',
+          display: 'block',
+          marginBottom: '8px',
+          transform: 'rotate(-2deg)',
+        }}>
+          ✨ our unhinged memory lane ✨
+        </span>
+        <h2 className="playfair" style={{
+          fontSize: 'clamp(32px, 8vw, 56px)',
+          fontStyle: 'italic',
+          color: '#f5e6d3',
+          fontWeight: 400,
+          lineHeight: 1.1,
+        }}>
+          Caro's Digital{' '}
+          <span className="gochi" style={{
+            color: '#d4588a',
+            textDecoration: 'underline',
+            textDecorationColor: '#c9956e',
+          }}>
+            Scrapbook
+          </span>
+        </h2>
+        <p className="handwritten" style={{
+          fontSize: '18px',
+          color: 'rgba(245,230,211,0.5)',
+          marginTop: '10px',
+        }}>
+          💡 tip: drag the photos & stickers around to arrange your own desk!
+        </p>
+      </div>
+
+      {/* Control Panel */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '12px',
+        flexWrap: 'wrap',
+        marginBottom: '40px',
+        position: 'relative',
+        zIndex: 10,
+      }}>
+        {/* Scatter & Tidy Controls */}
+        <button
+          onClick={scatterAll}
+          style={{
+            padding: '8px 18px',
+            background: !isTidied ? 'rgba(201,149,110,0.2)' : 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(201,149,110,0.3)',
+            borderRadius: '20px',
+            color: '#f5e6d3',
+            fontSize: '12px',
+            cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+            transition: 'all 0.3s ease',
+            minHeight: 'unset',
+            minWidth: 'unset',
+          }}
+        >
+          🌪️ Scatter Desk
+        </button>
+        <button
+          onClick={tidyUp}
+          style={{
+            padding: '8px 18px',
+            background: isTidied ? 'rgba(201,149,110,0.2)' : 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(201,149,110,0.3)',
+            borderRadius: '20px',
+            color: '#f5e6d3',
+            fontSize: '12px',
+            cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+            transition: 'all 0.3s ease',
+            minHeight: 'unset',
+            minWidth: 'unset',
+          }}
+        >
+          ✨ Tidy Grid
+        </button>
+
+        {/* Sticker Droppers */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          background: 'rgba(26,15,36,0.6)',
+          backdropFilter: 'blur(10px)',
+          padding: '4px 12px',
+          borderRadius: '30px',
+          border: '1px solid rgba(201,149,110,0.15)',
+        }}>
+          <span className="handwritten" style={{ fontSize: '13px', color: '#c9956e', marginRight: '6px' }}>Stickers:</span>
+          {['❤️', '✨', '👑', '🎉', '💅', '🔥', '🥂'].map(emoji => (
+            <button
+              key={emoji}
+              onClick={() => addNewSticker(emoji)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '18px',
+                cursor: 'pointer',
+                padding: '4px',
+                transition: 'transform 0.2s ease',
+                minHeight: 'unset',
+                minWidth: 'unset',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Scattered Scrapbook Canvas */}
+      <div
+        ref={canvasRef}
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '1200px',
+          // Dynamic height depending on screen size to hold absolute elements nicely
+          height: window.innerWidth < 600 ? '1450px' : '1100px',
+          margin: '0 auto',
+          background: 'rgba(17,10,24,0.3)',
+          borderRadius: '24px',
+          border: '2px dashed rgba(201,149,110,0.12)',
+          touchAction: 'none', // Prevent default panning/gestures during drags
+          boxShadow: 'inset 0 10px 40px rgba(0,0,0,0.3)',
+        }}
+      >
+        {/* Confetti / Burst animations */}
+        {bursts.map(b => (
+          <div
+            key={b.id}
+            style={{
+              position: 'absolute',
+              left: `${b.x}%`,
+              top: `${b.y}%`,
+              transform: 'translate(-50%, -50%)',
+              fontSize: '44px',
+              pointerEvents: 'none',
+              zIndex: 9999,
+              animation: 'fadeInScale 0.6s ease-out forwards',
+            }}
+          >
+            {b.emoji}
+          </div>
+        ))}
+
+        {/* Scattered Stickers */}
+        {stickers.map(st => (
+          <div
+            key={st.id}
+            onMouseDown={e => startDrag(e, st.id, true)}
+            onTouchStart={e => startDrag(e, st.id, true)}
+            style={{
+              position: 'absolute',
+              left: `${st.x}%`,
+              top: `${st.y}%`,
+              transform: `translate(-50%, -50%) rotate(${st.rotation}deg) scale(${st.scale})`,
+              fontSize: '24px',
+              cursor: 'grab',
+              userSelect: 'none',
+              zIndex: (st as any).z || 5,
+              transition: dragInfo.current?.id === st.id ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            }}
+            className="sticker-shake"
+          >
+            {st.emoji}
+          </div>
+        ))}
+
+        {/* Scattered Photos/Videos */}
+        {mediaItems.map((item, index) => {
+          const pos = positions[item.id] || { x: 10, y: 10, rot: 0, z: index + 1 }
+          const isDragging = dragInfo.current?.id === item.id
+
+          return (
+            <div
+              key={item.id}
+              onMouseDown={e => startDrag(e, item.id, false)}
+              onTouchStart={e => startDrag(e, item.id, false)}
+              onClick={e => {
+                // Spawn minor click confetti
+                triggerClickFeedback(e.clientX, e.clientY, '✨')
+              }}
+              style={{
+                position: 'absolute',
+                left: `${pos.x}%`,
+                top: `${pos.y}%`,
+                width: window.innerWidth < 600 ? '145px' : '200px',
+                transform: `rotate(${pos.rot}deg) scale(${isDragging ? 1.05 : 1})`,
+                zIndex: pos.z,
+                cursor: isDragging ? 'grabbing' : 'grab',
+                // smooth transition back when not actively dragging
+                transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.4s ease, top 0.4s ease',
+                userSelect: 'none',
+              }}
+              className="polaroid-frame"
+            >
+              {/* Wash Tape overlay */}
+              {item.tapeColor && (
+                <div
+                  className="journal-tape"
+                  style={{
+                    top: '-15px',
+                    left: '50%',
+                    transform: `translateX(-50%) rotate(${item.tapeAngle || 0}deg)`,
+                    width: '60px',
+                    height: '18px',
+                    background: item.tapeColor,
+                  }}
+                />
+              )}
+
+              {/* Photo Content */}
+              <div style={{
+                padding: '10px 10px 0',
+                position: 'relative',
+              }}>
+                {item.type === 'video' ? (
+                  <div style={{ position: 'relative', aspectRatio: '4/5', background: '#000', overflow: 'hidden' }}>
+                    <video
+                      src={item.src}
+                      muted
+                      loop
+                      playsInline
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                      onMouseEnter={e => e.currentTarget.play()}
+                      onMouseLeave={e => { e.currentTarget.pause(); e.currentTarget.currentTime = 0 }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(0,0,0,0.3)',
+                      color: '#f5e6d3',
+                      fontSize: '24px',
+                    }}>
+                      ▶
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={item.src}
+                    alt={item.caption}
+                    draggable={false}
+                    style={{
+                      width: '100%',
+                      aspectRatio: '4/5',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Polaroid bottom border + Hand note label */}
+              <div style={{
+                padding: '10px 8px 12px',
+                textAlign: 'center',
+              }}>
+                <div className="handwritten" style={{
+                  fontSize: 'clamp(13px, 3.5vw, 15px)',
+                  lineHeight: 1.1,
+                  color: '#2a1a0c',
+                  minHeight: '22px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  {item.handnote || item.caption}
+                </div>
+
+                {/* Info zoom icon */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setLightboxIndex(index)
+                  }}
+                  style={{
+                    marginTop: '4px',
+                    background: 'rgba(201,149,110,0.1)',
+                    border: '1px solid rgba(201,149,110,0.25)',
+                    borderRadius: '50%',
+                    color: '#c9956e',
+                    fontSize: '11px',
+                    width: '24px',
+                    height: '24px',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minWidth: 'unset',
+                    minHeight: 'unset',
+                    padding: 0,
+                  }}
+                >
+                  🔍
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Lightbox Trigger */}
+      {lightboxIndex !== null && (
+        <Lightbox
+          items={mediaItems}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onPrev={prevItem}
+          onNext={nextItem}
+        />
+      )}
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   LightBox Component
    ───────────────────────────────────────────── */
 function Lightbox({
   items,
@@ -67,39 +674,23 @@ function Lightbox({
   const videoRef = useRef<HTMLVideoElement>(null)
   const touchStartX = useRef<number | null>(null)
 
-  // Lock body scroll (class-based, handled in CSS)
+  // Block body scroll
   useEffect(() => {
     document.body.classList.add('lightbox-open')
     return () => document.body.classList.remove('lightbox-open')
   }, [])
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-      if (e.key === 'ArrowLeft') onPrev()
-      if (e.key === 'ArrowRight') onNext()
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose, onPrev, onNext])
-
-  // Reset video on slide change
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.pause()
-      videoRef.current.currentTime = 0
-    }
-  }, [index])
-
-  // Touch swipe handlers
+  // Touch Swipe navigation
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
   }
+  
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return
     const dx = e.changedTouches[0].clientX - touchStartX.current
     if (Math.abs(dx) > 50) {
-      dx < 0 ? onNext() : onPrev()
+      if (dx < 0) onNext()
+      else onPrev()
     }
     touchStartX.current = null
   }
@@ -117,65 +708,52 @@ function Lightbox({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(6,3,10,0.97)',
+        background: 'rgba(6,3,10,0.96)',
         backdropFilter: 'blur(20px)',
         animation: 'fadeInScale 0.3s cubic-bezier(0.23,1,0.32,1)',
-        padding: '60px 12px 20px',
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch',
+        padding: '60px 16px 20px',
       }}
     >
-      {/* Top bar */}
+      {/* Top Header */}
       <div style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        padding: '14px 16px',
+        top: 0, left: 0, right: 0,
+        padding: '16px',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'space-between',
-        zIndex: 10,
-        background: 'linear-gradient(to bottom, rgba(6,3,10,0.95) 0%, transparent 100%)',
+        alignItems: 'center',
+        background: 'linear-gradient(to bottom, rgba(6,3,10,0.95), transparent)',
       }}>
-        <div style={{
-          fontSize: '11px',
-          letterSpacing: '0.3em',
-          color: 'rgba(201,149,110,0.55)',
-          textTransform: 'uppercase',
-        }}>
+        <div className="handwritten" style={{ color: '#c9956e', fontSize: '18px' }}>
           {index + 1} / {items.length}
         </div>
         <button
-          onClick={e => { e.stopPropagation(); onClose() }}
+          onClick={onClose}
           style={{
-            background: 'rgba(201,149,110,0.12)',
+            background: 'rgba(201,149,110,0.1)',
             border: '1px solid rgba(201,149,110,0.3)',
-            color: '#c9956e',
-            fontSize: '22px',
-            width: 44, height: 44,
             borderRadius: '50%',
+            color: '#c9956e',
+            width: '40px', height: '40px',
+            fontSize: '20px',
             cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.2s ease',
-            flexShrink: 0,
+            minHeight: 'unset',
+            minWidth: 'unset',
           }}
-          aria-label="Close"
         >
-          ×
+          ✕
         </button>
       </div>
 
-      {/* Media + caption */}
+      {/* Media Box */}
       <div
         onClick={e => e.stopPropagation()}
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 16,
-          width: '100%',
-          maxWidth: 680,
+          gap: '16px',
+          maxWidth: '100%',
         }}
       >
         {item.type === 'video' ? (
@@ -186,12 +764,10 @@ function Lightbox({
             autoPlay
             playsInline
             style={{
-              width: '100%',
+              maxWidth: '85vw',
               maxHeight: '60dvh',
-              borderRadius: '14px',
-              boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
-              outline: 'none',
-              display: 'block',
+              borderRadius: '12px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
             }}
           />
         ) : (
@@ -199,437 +775,60 @@ function Lightbox({
             src={item.src}
             alt={item.caption}
             style={{
-              width: '100%',
-              maxHeight: '65dvh',
-              borderRadius: '14px',
+              maxWidth: '85vw',
+              maxHeight: '60dvh',
               objectFit: 'contain',
-              boxShadow: '0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(201,149,110,0.12)',
-              display: 'block',
+              borderRadius: '12px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
             }}
           />
         )}
 
-        {/* Caption */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{
-            fontSize: '10px',
-            letterSpacing: '0.35em',
-            color: '#c9956e',
-            textTransform: 'uppercase',
-            marginBottom: 6,
-          }}>
-            {item.sub}
-          </div>
-          <div className="playfair" style={{
-            fontSize: 'clamp(16px, 5vw, 22px)',
-            color: '#f5e6d3',
-            fontStyle: 'italic',
-          }}>
+          <h3 className="playfair" style={{ fontSize: '20px', color: '#f5e6d3', fontStyle: 'italic' }}>
             {item.caption}
-          </div>
+          </h3>
+          <p className="handwritten" style={{ fontSize: '18px', color: '#c9956e', marginTop: '4px' }}>
+            {item.handnote || item.sub}
+          </p>
         </div>
 
-        {/* Dot strip */}
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', padding: '0 8px' }}>
-          {items.map((_, i) => (
-            <div key={i} style={{
-              width: i === index ? 20 : 5,
-              height: 5,
-              borderRadius: 3,
-              background: i === index ? '#c9956e' : 'rgba(201,149,110,0.2)',
-              transition: 'all 0.3s ease',
-            }} />
-          ))}
-        </div>
-
-        {/* Swipe hint (mobile only) */}
-        <div style={{
-          fontSize: '11px',
-          letterSpacing: '0.2em',
-          color: 'rgba(201,149,110,0.35)',
-          textTransform: 'uppercase',
-          animation: 'swipe-hint 2s ease-in-out 3',
-        }}>
-          ← swipe to navigate →
-        </div>
-
-        {/* Desktop prev/next buttons */}
-        <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+        {/* Carousel buttons */}
+        <div style={{ display: 'flex', gap: '20px', marginTop: '10px' }}>
           <button
-            onClick={e => { e.stopPropagation(); onPrev() }}
+            onClick={onPrev}
             style={{
               background: 'rgba(201,149,110,0.1)',
-              border: '1px solid rgba(201,149,110,0.25)',
-              color: '#c9956e',
-              fontSize: '20px',
-              width: 48, height: 48,
+              border: '1px solid rgba(201,149,110,0.3)',
               borderRadius: '50%',
+              color: '#c9956e',
+              width: '44px', height: '44px',
+              fontSize: '20px',
               cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s ease',
+              minHeight: 'unset',
+              minWidth: 'unset',
             }}
-            aria-label="Previous"
           >
             ‹
           </button>
           <button
-            onClick={e => { e.stopPropagation(); onNext() }}
+            onClick={onNext}
             style={{
               background: 'rgba(201,149,110,0.1)',
-              border: '1px solid rgba(201,149,110,0.25)',
-              color: '#c9956e',
-              fontSize: '20px',
-              width: 48, height: 48,
+              border: '1px solid rgba(201,149,110,0.3)',
               borderRadius: '50%',
+              color: '#c9956e',
+              width: '44px', height: '44px',
+              fontSize: '20px',
               cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s ease',
+              minHeight: 'unset',
+              minWidth: 'unset',
             }}
-            aria-label="Next"
           >
             ›
           </button>
         </div>
       </div>
     </div>
-  )
-}
-
-/* ─────────────────────────────────────────────
-   Media Card — tilt disabled on touch devices
-   ───────────────────────────────────────────── */
-function MediaCard({
-  item,
-  index,
-  onClick,
-}: {
-  item: MediaItem
-  index: number
-  onClick: () => void
-}) {
-  const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 })
-  const [hovering, setHovering] = useState(false)
-  const [visible, setVisible] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
-      { threshold: 0.1 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [])
-
-  const rx = hovering ? (mouse.y - 0.5) * -14 : 0
-  const ry = hovering ? (mouse.x - 0.5) * 14 : 0
-
-  return (
-    <div
-      ref={ref}
-      onClick={onClick}
-      onMouseMove={e => {
-        const r = e.currentTarget.getBoundingClientRect()
-        setMouse({ x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height })
-      }}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => { setHovering(false); setMouse({ x: 0.5, y: 0.5 }) }}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible
-          ? `rotateX(${rx}deg) rotateY(${ry}deg) scale(${hovering ? 1.03 : 1})`
-          : `translateY(50px)`,
-        transition: visible
-          ? `transform 0.15s ease, box-shadow 0.3s ease, opacity 0.6s ease ${Math.min(index * 0.06, 0.5)}s`
-          : `opacity 0.6s ease ${Math.min(index * 0.06, 0.5)}s`,
-        transformStyle: 'preserve-3d',
-        cursor: 'zoom-in',
-        position: 'relative',
-        borderRadius: '14px',
-        overflow: 'hidden',
-        background: '#110a18',
-        boxShadow: hovering
-          ? '0 28px 60px rgba(0,0,0,0.65), 0 0 30px rgba(201,149,110,0.15)'
-          : '0 12px 36px rgba(0,0,0,0.45)',
-        aspectRatio: item.aspect,
-        /* Ensure cards fill column width */
-        width: '100%',
-        display: 'block',
-      }}
-    >
-      {/* Media */}
-      {item.type === 'video' ? (
-        <video
-          src={item.src}
-          muted
-          loop
-          playsInline
-          onMouseEnter={e => (e.currentTarget as HTMLVideoElement).play()}
-          onMouseLeave={e => { (e.currentTarget as HTMLVideoElement).pause(); (e.currentTarget as HTMLVideoElement).currentTime = 0 }}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-            transform: hovering ? 'scale(1.07)' : 'scale(1)',
-            transition: 'transform 0.6s ease',
-            filter: hovering ? 'brightness(1.1)' : 'brightness(0.75)',
-          }}
-        />
-      ) : (
-        <img
-          src={item.src}
-          alt={item.caption}
-          loading="lazy"
-          decoding="async"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-            transform: hovering ? 'scale(1.07)' : 'scale(1)',
-            transition: 'transform 0.6s ease',
-            filter: hovering ? 'brightness(1.1) saturate(1.15)' : 'brightness(0.82) saturate(0.95)',
-          }}
-        />
-      )}
-
-      {/* Gradient overlay */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(to top, rgba(6,3,10,0.92) 0%, rgba(6,3,10,0.1) 50%, transparent 100%)',
-      }} />
-
-      {/* Category badge */}
-      <div style={{
-        position: 'absolute',
-        top: 12, left: 12,
-        background: 'rgba(6,3,10,0.65)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(201,149,110,0.2)',
-        borderRadius: '20px',
-        padding: '3px 10px',
-        fontSize: '9px',
-        letterSpacing: '0.2em',
-        color: '#c9956e',
-        textTransform: 'uppercase',
-      }}>
-        {item.type === 'video' ? '▶ Video' : FILTERS.find(f => f.key === item.category)?.label ?? ''}
-      </div>
-
-      {/* Video play overlay */}
-      {item.type === 'video' && (
-        <div style={{
-          position: 'absolute',
-          top: '50%', left: '50%',
-          transform: `translate(-50%, -50%) scale(${hovering ? 1.15 : 1})`,
-          transition: 'transform 0.3s ease, opacity 0.3s ease',
-          opacity: hovering ? 0.95 : 0.7,
-          width: 52, height: 52,
-          background: 'rgba(201,149,110,0.18)',
-          backdropFilter: 'blur(12px)',
-          border: '2px solid rgba(201,149,110,0.5)',
-          borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#e8c4a0',
-          fontSize: '18px',
-          paddingLeft: '3px',
-        }}>
-          ▶
-        </div>
-      )}
-
-      {/* Caption */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        padding: '16px',
-        transform: hovering ? 'translateY(0)' : 'translateY(4px)',
-        transition: 'transform 0.3s ease',
-      }}>
-        <div style={{
-          fontSize: '9px',
-          letterSpacing: '0.25em',
-          color: '#c9956e',
-          textTransform: 'uppercase',
-          marginBottom: 4,
-        }}>
-          {item.sub}
-        </div>
-        <div className="playfair" style={{
-          fontSize: 'clamp(14px, 4vw, 18px)',
-          color: '#f5e6d3',
-          fontStyle: 'italic',
-          lineHeight: 1.2,
-        }}>
-          {item.caption}
-        </div>
-      </div>
-
-      {/* Top shimmer on hover */}
-      <div style={{
-        position: 'absolute',
-        top: 0, left: 0, right: 0,
-        height: '2px',
-        background: 'linear-gradient(to right, transparent, #c9956e, transparent)',
-        opacity: hovering ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-      }} />
-    </div>
-  )
-}
-
-/* ─────────────────────────────────────────────
-   Gallery Section
-   ───────────────────────────────────────────── */
-export function GallerySection() {
-  const [activeFilter, setActiveFilter] = useState<Category>('all')
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-  const filterScrollRef = useRef<HTMLDivElement>(null)
-
-  const filtered = activeFilter === 'all'
-    ? media
-    : media.filter(m => m.category === activeFilter)
-
-  const openLightbox = useCallback((idx: number) => setLightboxIndex(idx), [])
-  const closeLightbox = useCallback(() => setLightboxIndex(null), [])
-  const prevItem = useCallback(() =>
-    setLightboxIndex(i => i !== null ? (i - 1 + filtered.length) % filtered.length : null),
-    [filtered.length])
-  const nextItem = useCallback(() =>
-    setLightboxIndex(i => i !== null ? (i + 1) % filtered.length : null),
-    [filtered.length])
-
-  return (
-    <section style={{
-      padding: 'var(--section-v) var(--section-h)',
-      position: 'relative',
-    }}>
-      {/* Section header */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <div style={{
-          fontSize: '10px',
-          letterSpacing: '0.6em',
-          color: '#c9956e',
-          textTransform: 'uppercase',
-          marginBottom: '14px',
-        }}>
-          A Year in Frames
-        </div>
-        <h2 className="playfair" style={{
-          fontSize: 'clamp(28px, 7vw, 56px)',
-          fontStyle: 'italic',
-          color: '#f5e6d3',
-          fontWeight: 400,
-        }}>
-          Moments of{' '}
-          <span style={{
-            background: 'linear-gradient(135deg, #c9956e, #e8c4a0)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
-            You
-          </span>
-        </h2>
-        <div style={{
-          width: '50px', height: '1px',
-          background: 'linear-gradient(to right, transparent, #c9956e, transparent)',
-          margin: '18px auto 0',
-        }} />
-      </div>
-
-      {/* Filter bar — horizontally scrollable on mobile */}
-      <div
-        ref={filterScrollRef}
-        style={{
-          display: 'flex',
-          gap: '8px',
-          overflowX: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          padding: '4px 0 16px',
-          marginBottom: '32px',
-          /* Center on desktop, scroll on mobile */
-          justifyContent: 'flex-start',
-        }}
-      >
-        <style>{`.filter-bar::-webkit-scrollbar { display: none; }`}</style>
-        <div className="filter-bar" style={{ display: 'flex', gap: '8px', margin: '0 auto' }}>
-          {FILTERS.map(f => (
-            <button
-              key={f.key}
-              onClick={() => { setActiveFilter(f.key); setLightboxIndex(null) }}
-              style={{
-                padding: '10px 18px',
-                border: activeFilter === f.key
-                  ? '1px solid rgba(201,149,110,0.8)'
-                  : '1px solid rgba(201,149,110,0.18)',
-                background: activeFilter === f.key
-                  ? 'rgba(201,149,110,0.14)'
-                  : 'rgba(6,3,10,0.6)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '30px',
-                color: activeFilter === f.key ? '#e8c4a0' : 'rgba(245,230,211,0.45)',
-                fontSize: '11px',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                fontFamily: "'DM Sans', sans-serif",
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                /* Ensure 44px tap target height */
-                minHeight: '44px',
-              }}
-            >
-              <span style={{ fontSize: '12px' }}>{f.icon}</span>
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Masonry grid — CSS columns, responsive via CSS variable */}
-      <div style={{
-        columns: 'var(--gallery-cols)',
-        columnGap: '14px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-      }}>
-        {filtered.map((item, i) => (
-          <div key={item.src} style={{ breakInside: 'avoid', marginBottom: '14px' }}>
-            <MediaCard item={item} index={i} onClick={() => openLightbox(i)} />
-          </div>
-        ))}
-      </div>
-
-      {/* Footer note */}
-      <div style={{
-        textAlign: 'center',
-        marginTop: '48px',
-        color: 'rgba(245,230,211,0.3)',
-        fontSize: '12px',
-        letterSpacing: '0.15em',
-        fontStyle: 'italic',
-      }}>
-        ✦ &nbsp; {filtered.length} precious {filtered.length === 1 ? 'moment' : 'moments'} captured &nbsp; ✦
-      </div>
-
-      {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <Lightbox
-          items={filtered}
-          index={lightboxIndex}
-          onClose={closeLightbox}
-          onPrev={prevItem}
-          onNext={nextItem}
-        />
-      )}
-    </section>
   )
 }
